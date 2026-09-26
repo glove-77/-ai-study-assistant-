@@ -66,7 +66,16 @@ async function requestStudyHelp(payload) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || "Something went wrong.");
+    const lines = [
+      data.error || "Something went wrong.",
+      data.details ? `Details: ${data.details}` : "",
+      data.hint ? `Hint: ${data.hint}` : "",
+      data.status ? `Status: ${data.status}` : "",
+      data.code ? `Code: ${data.code}` : "",
+      data.model ? `Model: ${data.model}` : ""
+    ].filter(Boolean);
+
+    throw new Error(lines.join("\n"));
   }
 
   return data;

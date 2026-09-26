@@ -134,6 +134,32 @@ Next step:
 Ask for an example or generate a quiz to test yourself.`;
 }
 
+function getOpenAIHint(error) {
+  const status = error.status || error.code || "unknown";
+  const code = error.code || error.error?.code || "";
+  const type = error.type || error.error?.type || "";
+  const message = error.message || "Unknown OpenAI error";
+  const lowerMessage = message.toLowerCase();
+
+  if (status === 401 || lowerMessage.includes("api key")) {
+    return "Render has an API key problem. Check that OPENAI_API_KEY is exactly your OpenAI API key, with no quotes or extra spaces.";
+  }
+
+  if (status === 429 || code === "insufficient_quota" || lowerMessage.includes("quota")) {
+    return "Your OpenAI account likely needs billing or available credits. Check Platform billing and usage limits.";
+  }
+
+  if (status === 404 || lowerMessage.includes("model")) {
+    return "The selected model may not be available for this API key. Try setting OPENAI_MODEL to gpt-5-mini or another model available in your OpenAI account.";
+  }
+
+  if (status === 400) {
+    return "The request format was rejected. This usually means the model or API format needs changing.";
+  }
+
+  return "Open Render logs for the full backend error, then check the API key, billing, and model.";
+}
+
 app.post("/api/study", async (req, res) => {
   try {
     const { subject, topic, mode = "explain", studentAnswer = "" } = req.body || {};
@@ -170,12 +196,20 @@ app.post("/api/study", async (req, res) => {
     });
   } catch (error) {
     const status = error.status || error.code || "unknown";
+    const code = error.code || error.error?.code || "";
+    const type = error.type || error.error?.type || "";
     const message = error.message || "Unknown OpenAI error";
-    console.error("OpenAI request failed:", { status, message, model });
+    const hint = getOpenAIHint(error);
+    console.error("OpenAI request failed:", { status, code, type, message, model });
     return res.status(500).json({
       error:
         "The assistant could not generate a response. Check Render logs, OPENAI_API_KEY, billing, and OPENAI_MODEL.",
-      details: process.env.NODE_ENV === "production" ? undefined : message
+      details: message,
+      status,
+      code,
+      type,
+      model,
+      hint
     });
   }
 });
