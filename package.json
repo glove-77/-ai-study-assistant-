@@ -1,0 +1,18 @@
+{
+  "name": "ai-study-assistant",
+  "version": "1.0.0",
+  "description": "An English AI study assistant with explain, example, quiz, feedback, and study plan modes.",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "openai": "^4.77.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

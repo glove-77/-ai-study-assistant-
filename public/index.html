@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Study Assistant</title>
+    <meta
+      name="description"
+      content="An English AI study assistant for explanations, examples, quizzes, feedback, and study plans."
+    >
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-labelledby="app-title">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">AI learning tool</p>
+            <h1 id="app-title">AI Study Assistant</h1>
+          </div>
+          <div class="status" id="statusBadge">Demo ready</div>
+        </header>
+
+        <div class="visual-strip">
+          <img src="assets/study-hero.png" alt="A modern study desk with a laptop and learning materials">
+          <div>
+            <strong>Study smarter, one topic at a time.</strong>
+            <span>Choose a mode, enter a topic, and get a clear English response.</span>
+          </div>
+        </div>
+
+        <form class="study-form" id="studyForm">
+          <label>
+            Subject
+            <select id="subject">
+              <option>Computer Science</option>
+              <option>Mathematics</option>
+              <option>English</option>
+              <option>Physics</option>
+              <option>Biology</option>
+              <option>History</option>
+              <option>General Study</option>
+            </select>
+          </label>
+
+          <label>
+            Topic
+            <input id="topic" type="text" placeholder="Example: neural networks, derivatives, present perfect" required>
+          </label>
+
+          <fieldset>
+            <legend>Mode</legend>
+            <div class="mode-grid">
+              <label><input type="radio" name="mode" value="explain" checked><span>Explain</span></label>
+              <label><input type="radio" name="mode" value="example"><span>Examples</span></label>
+              <label><input type="radio" name="mode" value="quiz"><span>Quiz</span></label>
+              <label><input type="radio" name="mode" value="feedback"><span>Feedback</span></label>
+              <label><input type="radio" name="mode" value="plan"><span>Study plan</span></label>
+            </div>
+          </fieldset>
+
+          <label class="answer-field">
+            Your answer for feedback mode
+            <textarea id="studentAnswer" rows="5" placeholder="Paste your answer here if you want feedback."></textarea>
+          </label>
+
+          <button type="submit" id="submitButton">Generate study help</button>
+        </form>
+      </section>
+
+      <aside class="result-panel" aria-label="Assistant result">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Response</p>
+            <h2>Your study output</h2>
+          </div>
+          <button class="secondary" id="copyButton" type="button">Copy</button>
+        </div>
+        <pre id="result">Enter a topic and choose a mode. The assistant will generate an explanation, examples, quiz, feedback, or a study plan.</pre>
+
+        <div class="history">
+          <div class="panel-header compact">
+            <h2>Recent topics</h2>
+            <button class="secondary" id="clearHistory" type="button">Clear</button>
+          </div>
+          <ul id="historyList"></ul>
+        </div>
+      </aside>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
