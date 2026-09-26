@@ -32,7 +32,11 @@ To use live AI responses, put your API key in `.env`:
 
 ```text
 OPENAI_API_KEY=your_key_here
+OPENAI_MODEL=gpt-5-mini
 ```
+
+On Render, add the same values in **Environment Variables**. You can open
+`/api/health` on your deployed URL to check whether the server sees the key.
 
 ## Project structure
 

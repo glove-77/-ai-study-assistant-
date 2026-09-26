@@ -5,10 +5,19 @@ import OpenAI from "openai";
 const app = express();
 const port = process.env.PORT || 3000;
 const hasApiKey = Boolean(process.env.OPENAI_API_KEY);
-const client = hasApiKey ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
+const model = process.env.OPENAI_MODEL || "gpt-5-mini";
+const client = hasApiKey ? new OpenAI() : null;
 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.static("public"));
+
+app.get("/api/health", (req, res) => {
+  res.json({
+    ok: true,
+    apiKeyConfigured: hasApiKey,
+    model
+  });
+});
 
 const modePrompts = {
   explain:
@@ -140,9 +149,9 @@ app.post("/api/study", async (req, res) => {
       });
     }
 
-    const response = await client.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
+    const response = await client.responses.create({
+      model,
+      input: [
         {
           role: "system",
           content:
@@ -152,24 +161,28 @@ app.post("/api/study", async (req, res) => {
           role: "user",
           content: buildPrompt({ subject, topic, mode, studentAnswer })
         }
-      ],
-      temperature: 0.7
+      ]
     });
 
     return res.json({
       mode: "live",
-      content: response.choices[0]?.message?.content || "No response was generated."
+      content: response.output_text || "No response was generated."
     });
   } catch (error) {
-    console.error(error);
+    const status = error.status || error.code || "unknown";
+    const message = error.message || "Unknown OpenAI error";
+    console.error("OpenAI request failed:", { status, message, model });
     return res.status(500).json({
-      error: "The assistant could not generate a response. Check the server logs and API key."
+      error:
+        "The assistant could not generate a response. Check Render logs, OPENAI_API_KEY, billing, and OPENAI_MODEL.",
+      details: process.env.NODE_ENV === "production" ? undefined : message
     });
   }
 });
 
 app.listen(port, () => {
   console.log(`AI Study Assistant is running at http://localhost:${port}`);
+  console.log(`Using model: ${model}`);
   if (!hasApiKey) {
     console.log("OPENAI_API_KEY is not set. The app is running in demo mode.");
   }
